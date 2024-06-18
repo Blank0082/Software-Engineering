@@ -1,6 +1,6 @@
 import {Link, useNavigate} from 'react-router-dom';
 import '../css/Navbar.css';
-import logo from "../img/logo.jpg";
+import logo from "../img/logo.png";
 import React, {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import {AuthContext} from "./AuthContext";
