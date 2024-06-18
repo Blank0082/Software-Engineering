@@ -111,3 +111,18 @@ This project includes a Node.js backend service and a React frontend application
    ```
    npm start
    ```
+
+   The application will be available at `http://localhost:3000`.
+
+4. **Access the application:**
+
+   Open your web browser and visit `http://localhost:3000` to see the application in action.
+
+5. **Stopping the servers:**
+
+   To stop the backend server, press `Ctrl + C` in the terminal where it's running.
+   To stop the frontend development server, press `Ctrl + C` in the terminal where it's running.
+
+6. **Troubleshooting:**
+
+   If you encounter any issues during the setup or installation process, please refer to the documentation for the specific technology (Node.js, MongoDB, React) for troubleshooting steps.

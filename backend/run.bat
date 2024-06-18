@@ -1,7 +1,7 @@
 @echo off
 
-@REM 進入 recogntionAPI 目錄
-cd /d "%~dp0\recognitionAPI"
+set script_dir=%~dp0
 
-@REM 運行 python 腳本
+cd /d "%script_dir%recognitionAPI"
+
 python app.py %1
