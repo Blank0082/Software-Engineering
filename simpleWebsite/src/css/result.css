@@ -1,0 +1,213 @@
+.result-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.result-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.result-title {
+    align-self: flex-start;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.result-filename {
+    font-size: 18px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.result-content {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.result-image-container {
+    position: relative;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.result-image{
+    width: 90%;
+    height: 50vh;
+    border: 1px solid;
+    border-radius: 8px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.result-image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    transition: transform 0.25s ease;
+    border-radius: 8px;
+}
+
+.result-image-container .result-error-message{
+    font-size: 24px;
+    color: red;
+}
+
+
+.result-image-container img:hover {
+    cursor: zoom-in;
+}
+
+.result-image-container img:active {
+    cursor: zoom-out;
+    transform: scale(2);
+    position: fixed;
+    border: 0.1px solid;
+    top: 50%;
+    left: 50%;
+    height: 50%;
+    transform: translate(-50%, -50%) scale(1.5);
+    z-index: 9999;
+}
+
+.result-image-container button {
+    position: absolute;
+    top: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor:  pointer;
+    font-size: 24px;
+    padding: 10px;
+    transition: background-color 0.3s;
+}
+
+
+.result-image-container button:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.result-image-container button:active {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.result-image-container button:first-of-type {
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.result-image-container button:last-of-type {
+    right: 0;
+    transform: translateY(-50%);
+}
+
+.result-text-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 50vh;
+}
+
+.result-text-container textarea {
+    width: 100%;
+    height: calc(50vh - 50px);
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid;
+    border-radius: 4px;
+    resize: none;
+    background-color:  #2a2e2f;
+    color:#c8c3bc;
+    caret-color: white;
+}
+
+.result-text-container .show-text-container{
+    width: 100%;
+    height: calc(50vh - 50px);
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid;
+    border-radius: 4px;
+    resize: none;
+    overflow-y: auto;
+}
+.result-text-container .show-text-container-error{
+    height: 50vh;
+    font-size: 16px;
+    border: 1px solid;
+    border-radius: 4px;
+    resize: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.result-text-container button {
+    margin-top: 7.5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.result-text-container button.save {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.result-text-container button.save:hover {
+    background-color: #45a049;
+}
+
+.result-text-container button.cancel {
+    margin-left: 10px;
+    background-color: #f44336;
+    color: white;
+}
+
+.result-text-container button.cancel:hover {
+    background-color: #da190b;
+}
+
+.result-text-container button.edit {
+    background-color: #008CBA;
+    color: white;
+}
+
+.result-text-container button.edit:hover {
+    background-color: #007B9E;
+}
+
+.result-container button.save-all {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background-color: #4CAF50;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.result-container button.save-all:hover {
+    background-color: #45a049;
+}
+
+
+.result-info {
+    margin-top: 10px;
+    font-size: 16px;
+}

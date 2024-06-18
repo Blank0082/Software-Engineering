@@ -1,0 +1,45 @@
+.background_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    background-image: url("../img/home_img.jpg");
+    height: 400px;
+    width: 100%;
+}
+
+
+.first_p {
+    position: absolute;
+    top: 70%;
+    left: -100%;
+    white-space: nowrap;
+    font-size: 32px;
+    font-weight: bold;
+    animation: slideIn 2s forwards;
+
+}
+
+.cursor {
+    display: inline-block;
+    width: 1px;
+    background-color: currentColor;
+    margin-left: 2px;
+    animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes slideIn {
+    to {
+        left: 25%; /* 文本最终位置在屏幕中间 */
+    }
+}

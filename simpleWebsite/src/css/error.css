@@ -1,0 +1,45 @@
+@keyframes animateCircle {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes animate {
+    0% {
+        transform: rotate(45deg);
+    }
+    100% {
+        transform: rotate(405deg);
+    }
+}
+
+@keyframes flickering {
+    0%, 19%, 21%, 23%, 54%, 56%, 100% {
+        opacity: 0.99;
+    }
+    20%, 24%, 55% {
+        opacity: 0.5;
+    }
+}
+
+.p-404 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 80px;
+    text-align: center;
+    color: #4ec7ff;
+    text-shadow: 0 0 1000px #38d1ff;
+    filter: drop-shadow(0 0 20px #38d1ff);
+}
+
+.flickering {
+    animation: flickering 0.7s infinite;
+    -webkit-animation: flickering 0.88s infinite;
+    color: white;
+}
+
+.bigger {
+    font-size: 135px;
+}
