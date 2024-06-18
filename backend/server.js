@@ -9,6 +9,8 @@ const fileUpload = require('express-fileupload');
 const fs = require('fs');
 const path = require('path');
 
+const platform=process.platform;
+
 const secretOrPublicKey = 'secret123';
 
 const authMiddleware = (req, res, next) => {
@@ -66,13 +68,14 @@ app.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
         const user = await User.create({username, password: hashedPassword});
-        console.log('User created:', user); // 添加這行日誌輸出
-        res.json({status: 'ok'});
+        console.log('User created:', user);
+        res.json({status: 'success'});
     } catch (err) {
         if (err.code === 11000) {
             res.status(409).json({status: 'error', error: 'Duplicate username'});
         } else {
-            res.status(500).json({status: 'error', error: err.message});
+            console.error('Error creating user:', err); 
+            res.status(500).json({status: 'error', error: 'Server error'});
         }
     }
 });
@@ -101,7 +104,7 @@ app.post('/login', async (req, res) => {
             sameSite: 'None',
         });
 
-        return res.json({status: 'ok'});
+        return res.json({status: 'success'});
     } catch (err) {
         res.status(500).json({status: 'error', error: 'Server error'});
     }
@@ -115,6 +118,11 @@ app.post('/upload',authMiddleware, async (req, res) => {
     }
 
     const files = Array.isArray(req.files.files) ? req.files.files : [req.files.files];
+
+
+    if(files.map(file => file.size).reduce((a, b) => a + b, 0) > 30 * 1024 * 1024) {
+        return res.status(413).json({status: 'error', error: 'Total file size exceeds 30MB.'});
+    }
 
     const uploadDir = './uploads';
     if (!fs.existsSync(uploadDir)) {
@@ -131,7 +139,13 @@ app.post('/upload',authMiddleware, async (req, res) => {
         const uploadPath = path.join(uploadDir, uniqueFilename);
 
         await file.mv(uploadPath);
-        const command = `./run.sh ../${uploadPath}`;
+
+        let command;
+        if (platform === 'win32') {
+            command = `run.bat ../${uploadPath}`;
+        } else {
+            command = `./run.sh ../${uploadPath}`;
+        }
 
         const execResult = await new Promise((resolve, reject) => {
             exec(command, {timeout: 3600000}, async (error, stdout, stderr) => {
@@ -187,7 +201,7 @@ app.post('/upload',authMiddleware, async (req, res) => {
     try {
         const results = await Promise.all(files.map(file => uploadAndProcessFile(file)));
         console.log(results);
-        res.json({status: 'ok', results});
+        res.json({status: 'success', results});
     } catch (err) {
         console.error('Error processing files:', err);
         res.status(500).json({status: 'error', error: err.message});
@@ -199,7 +213,7 @@ app.get('/history', authMiddleware,async (req, res) => {
     const username = req.username;
     try {
         const files = await File.find({user: username}).sort({uploadDate: -1});
-        res.json({status: 'ok', files: files});
+        res.json({status: 'success', files: files});
     } catch (err) {
         res.status(500).json({status: 'error', error: 'Database query error'});
     }
@@ -215,7 +229,7 @@ app.get('/results/:filename', authMiddleware, async (req, res) => {
             return res.status(403).json({ status: 'error', error: 'Forbidden' });
         }
 
-        res.json({ status: 'success', data: file.result });
+        res.json({ status: 'success', data: file.result , originalFilename: file.originalFilename});
     } catch (err) {
         res.status(500).json({ status: 'error', error: 'Database query error' });
     }
@@ -233,15 +247,34 @@ app.post('/saveResults', authMiddleware, async (req, res) => {
                 );
             }
         }
-        res.json({ status: 'success', message: 'Results saved successfully' });
+        res.json({status: 'success'});
     } catch (err) {
         res.status(500).json({ status: 'error', error: 'Database update error' });
     }
 });
 
+app.put('/saveHistoryResult/:id', authMiddleware, async (req, res) => {
+    const fileId = req.params.id;
+    const data = req.body;
+    const username = req.username;
+
+    try {
+        const file = await File.findOne({ _id: fileId, user: username });
+        if (!file) {
+            return res.status(403).json({ status: 'error', error: 'Forbidden' });
+        }
+        await File.updateOne(
+            { _id: fileId, user: username },
+            { $set: { result: data.result } }
+        );
+        res.json({ status: 'success' });
+    }catch (err) {
+        res.status(500).json({ status: 'error', error: 'Database update error' })
+    };
+});
+
 app.get('/uploads/:filename',authMiddleware, async (req, res) => {
     
-
     const filename = req.params.filename;
     const username = req.username;
     try {
@@ -270,7 +303,7 @@ app.get('/checkAuth', (req, res) => {
     }
     try {
         const decoded = jwt.verify(token, secretOrPublicKey);
-        res.json({status: 'ok', user: decoded.username});
+        res.json({status: 'success', user: decoded.username});
     } catch (err) {
         res.status(401).json({status: 'error', error: 'Invalid token'});
     }

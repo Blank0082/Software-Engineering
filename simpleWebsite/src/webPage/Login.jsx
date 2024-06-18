@@ -19,16 +19,17 @@ function Login() {
                 password
             }, {withCredentials: true}
         ).then(response => {
-                if (response.data.error) {
-                    setError(response.data.error);
-                    return;
-                }
                 //需要創建登入成功畫面
                 setIsLoggedIn(true);
                 navigate('/');
             }
         ).catch(error => {
-                setError('An error occurred during login.');
+                if(error.response && error.response.status === 401)
+                    setError('Invalid username or password.');
+                else if (error.response&& error.response.status === 500)
+                    setError('An error occurred during login.');
+                else
+                    setError('Network error. Please try again later.');
             }
         );
     };
@@ -63,7 +64,7 @@ function Login() {
                     <div className="register-link">
                         <p>Don't have a account?<Link to="/register"> Sign up</Link></p>
                     </div>
-                    {error && <p className="error">{error}</p>}
+                    {error && <div className="error">{error}</div>}
                 </form>
             </div>
         </div>

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Navbar from "../components/Navbar";
 import '../css/Home.css';
 
-export default function Home() {
+function Home() {
     const [text, setText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [loopNum, setLoopNum] = useState(0);
@@ -42,3 +42,5 @@ export default function Home() {
         </div>
     );
 }
+
+export default Home;

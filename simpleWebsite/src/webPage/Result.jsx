@@ -9,9 +9,37 @@ const Result = () => {
     const { results } = location.state || { results: [] };
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isEditing, setIsEditing] = useState(false);
-    const [editedResults, setEditedResults] = useState(results.map(result => ({ ...result, data: '' })));
+    const [editedResults, setEditedResults] = useState([]);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (results.length === 0) {
+            navigate('/no-results'); // 導向沒有結果的頁面
+        } else {
+            const fetchResults = async () => {
+                setLoading(true);
+                try {
+                    const fetchedResults = await Promise.all(
+                        results.map(async (result) => {
+                            if (result.status === 'success') {
+                                const response = await axios.get(`http://localhost:5000/results/${result.filename}`, { withCredentials: true });
+                                return { ...result, data: response.data.data, originalFilename: response.data.originalFilename };
+                            }
+                            return result;
+                        })
+                    );
+                    setEditedResults(fetchedResults);
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching results:', error);
+                    setLoading(false);
+                }
+            };
+
+            fetchResults();
+        }
+    }, [results, navigate]);
 
     const handlePrevImage = useCallback(() => {
         setCurrentIndex((prevIndex) => (prevIndex === 0 ? results.length - 1 : prevIndex - 1));
@@ -38,33 +66,23 @@ const Result = () => {
         };
     }, [isEditing, handlePrevImage, handleNextImage]);
 
-    useEffect(() => {
-        const fetchResults = async () => {
-            setLoading(true);
-            try {
-                const fetchedResults = await Promise.all(
-                    results.map(async (result) => {
-                        if (result.status === 'success') {
-                            const response = await axios.get(`http://localhost:5000/results/${result.filename}`, { withCredentials: true });
-                            console.log('Response:', { ...result, data: response.data.data });
-                            return { ...result, data: response.data.data };
-                        }
-                        return result;
-                    })
-                );
-                setEditedResults(fetchedResults);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching results:', error);
-                setLoading(false);
-            }
-        };
-
-        fetchResults();
-    }, [results]);
-
     const handleEditClick = () => {
         setIsEditing(true);
+    };
+
+    const handleDownloadClick = () => {
+        const result = editedResults[currentIndex];
+        if (result.status === 'success') {
+            const blob = new Blob([result.data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = (result.originalFilename).split('.').slice(0, -1).join('.') + '.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
     };
 
     const handleSaveClick = () => {
@@ -82,33 +100,84 @@ const Result = () => {
         if (window.confirm('確定保存所有更改嗎？')) {
             axios.post("http://localhost:5000/saveResults", { results: editedResults }, { withCredentials: true })
                 .then(response => {
-                    console.log('Results saved successfully:', response.data);
+                    alert('保存成功');
                     navigate('/history');
                 })
                 .catch(error => {
-                    console.error('Error saving results:', error);
+                    if (error.response && error.response.status === 401) {
+                        alert('請先登入');
+                        navigate('/login');
+                    } else if (error.response && error.response.status === 403) {
+                        console.error('Forbidden:', error.response.data);
+                        alert('Forbidden');
+                    } else if (error.response && error.response.status === 500) {
+                        console.error('Server Error:', error.response.data);
+                        alert('Sever Error');
+                    } else {
+                        console.error('Server Error:', error);
+                        alert('Sever Error');
+                    }
                 });
         }
     };
 
+    const renderContent = () => {
+        if (loading) {
+            return <div className="loading-spinner">loading...</div>;
+        }
+
+        if (!editedResults[currentIndex]) {
+            return <div>沒有結果顯示</div>;
+        }
+
+        if (isEditing) {
+            return (
+                <>
+                    <textarea
+                        value={editedResults[currentIndex].data}
+                        onChange={(event) => {
+                            const updatedResults = [...editedResults];
+                            updatedResults[currentIndex].data = event.target.value;
+                            setEditedResults(updatedResults);
+                        }}
+                    />
+                    <div>
+                        <button className="save" onClick={handleSaveClick}>保存</button>
+                        <button className="cancel" onClick={handleCancelClick}>取消</button>
+                    </div>
+                </>
+            );
+        }
+
+        if (editedResults[currentIndex].status === 'error') {
+            return <div className="show-text-container-error">原因：{editedResults[currentIndex].data}</div>;
+        }
+
+        return (
+            <>
+                <div className="show-text-container">{editedResults[currentIndex].data}</div>
+                <div className="result-buttons">
+                    <button className="edit" onClick={handleEditClick}>修改</button>
+                    <button className="download" onClick={handleDownloadClick}>下載</button>
+                </div>
+            </>
+        );
+    };
+
     return (
-        <div className="result-page list-container">
+        <div className="result-page">
             <Navbar />
-            <div className="result-container">
+            <div className="result-container list-container">
                 <h2 className="result-title">Results</h2>
                 <div className='result-filename'>
-                    檔案名稱:
-                    <div>
-                        {editedResults[currentIndex].status === 'error'
-                            ? (editedResults[currentIndex].filename)
-                            : (editedResults[currentIndex].filename?.split('-').slice(1).join('-'))}
-                    </div>
+                    <strong>檔案名稱:</strong>
+                    <div>{editedResults[currentIndex] && editedResults[currentIndex].originalFilename}</div>
                 </div>
                 <div className="result-content">
                     <div className="result-image-container">
                         <button onClick={handlePrevImage}>&lt;</button>
                         <div className="result-image">
-                            {editedResults[currentIndex].status === 'error' ? (
+                            {editedResults[currentIndex] && editedResults[currentIndex].status === 'error' ? (
                                 <div className="result-error-message">圖像辨識錯誤</div>
                             ) : (
                                 <img src={`http://localhost:5000/uploads/${results[currentIndex]?.filename}`} alt="Preview" />
@@ -117,37 +186,7 @@ const Result = () => {
                         <button onClick={handleNextImage}>&gt;</button>
                     </div>
                     <div className="result-text-container">
-                        {loading ? (
-                            <div className="loading-spinner">loading...</div>
-                        ) : (
-                            isEditing ? (
-                                <div>
-                                    <textarea
-                                        value={editedResults[currentIndex].data}
-                                        onChange={(event) => {
-                                            const updatedResults = [...editedResults];
-                                            updatedResults[currentIndex].data = event.target.value;
-                                            setEditedResults(updatedResults);
-                                        }}
-                                    />
-                                    <button className="save" onClick={handleSaveClick}>保存</button>
-                                    <button className="cancel" onClick={handleCancelClick}>取消</button>
-                                </div>
-                            ) : (
-                                <div>
-                                    {editedResults[currentIndex].status === 'error' ? (
-                                        <div className="show-text-container-error">原因：{editedResults[currentIndex].data}</div>
-                                    )
-                                        : (
-                                            <>
-                                                <div className="show-text-container">{editedResults[currentIndex].data}</div>
-                                                <button className="edit" onClick={handleEditClick}>修改</button>
-                                            </>
-                                        )
-                                    }
-                                </div>
-                            )
-                        )}
+                        {renderContent()}
                     </div>
                 </div>
                 <div className="result-info">

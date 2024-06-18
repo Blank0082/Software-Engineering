@@ -180,6 +180,10 @@
 .result-text-container button.cancel:hover {
     background-color: #da190b;
 }
+.result-buttons{
+    display: flex;
+    justify-content: space-between;
+}
 
 .result-text-container button.edit {
     background-color: #008CBA;
@@ -188,6 +192,16 @@
 
 .result-text-container button.edit:hover {
     background-color: #007B9E;
+}
+
+.result-text-container button.download{
+    background-color: #ee7b00;
+    color: white;
+}
+
+.result-text-container button.download:hover{
+    background-color: #c76700;
+    color: white;
 }
 
 .result-container button.save-all {

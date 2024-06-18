@@ -1,11 +1,11 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import {Link, useNavigate} from "react-router-dom";
-import {AuthContext} from "../components/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../components/AuthContext";
 
 function Register() {
-    const {setIsLoggedIn} = useContext(AuthContext);
+    const { setIsLoggedIn } = useContext(AuthContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -14,43 +14,42 @@ function Register() {
     const handleRegister = async (e) => {
         e.preventDefault();
         axios.post('http://localhost:5000/register', {
+            username,
+            password
+        }, { withCredentials: true }
+        ).then(response => {
+            axios.post('http://localhost:5000/login', {
                 username,
                 password
-            }, {withCredentials: true}
-        ).then(response => {
-                if (response.data.error) {
-                    setError(response.data.error);
-                    return;
-                }
-                axios.post('http://localhost:5000/login', {
-                        username,
-                        password
-                    }, {withCredentials: true}
-                ).then(response => {
-                        if (response.data.error) {
-                            setError(response.data.error);
-                            return;
-                        }
-                        setIsLoggedIn(true);
-                        navigate('/');
-                    }
-                ).catch(error => {
-                        setError('An error occurred during login.');
-                    }
-                );
-            }
-        ).catch(error => {
-                setError('An error occurred during registration.');
-            }
-        );
+            }, { withCredentials: true }
+            ).then(response => {
+                //需要創建註冊與正在登入畫面
+                setIsLoggedIn(true);
+                navigate('/');
+            }).catch(error => {
+                if(error.response && error.response.status === 401)
+                    setError('Invalid username or password.');
+                else if (error.response&& error.response.status === 500)
+                    setError('An error occurred during login.');
+                else
+                    setError('Network error. Please try again later.');
+            });
+        }).catch(error => {
+            if (error.response && error.response.status === 409)
+                setError('Username already exists.');
+            else if (error.response && error.response.status === 500)
+                setError('An error occurred during login.');
+            else
+                setError('Network error. Please try again later.');
+        });
     };
 
     return (
         <div className="background_container1">
-            <Navbar/>
+            <Navbar />
             <div className="wrapper list-container">
                 <form onSubmit={handleRegister}>
-                    <h1>Register</h1>
+                    <h1>Sign Up</h1>
                     <div className="input-box">
                         <input
                             type="text"
@@ -74,7 +73,7 @@ function Register() {
                     <div className="register-link">
                         <p>You have a account?<Link to="/login"> Sing in</Link></p>
                     </div>
-                    {error && <p className="error">{error}</p>}
+                    {error && <div className="error">{error}</div>}
                 </form>
             </div>
         </div>
