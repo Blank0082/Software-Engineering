@@ -27,9 +27,9 @@ function Register() {
                 setIsLoggedIn(true);
                 navigate('/');
             }).catch(error => {
-                if(error.response && error.response.status === 401)
+                if (error.response && error.response.status === 401)
                     setError('Invalid username or password.');
-                else if (error.response&& error.response.status === 500)
+                else if (error.response && error.response.status === 500)
                     setError('An error occurred during login.');
                 else
                     setError('Network error. Please try again later.');
@@ -54,7 +54,10 @@ function Register() {
                         <input
                             type="text"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(e) => {
+                                setUsername(e.target.value)
+                                setError('');
+                            }}
                             placeholder="Username"
                             required
                         />
@@ -64,7 +67,10 @@ function Register() {
                         <input
                             type="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                setError('');
+                            }}
                             placeholder="Password"
                         />
                         <i className="bx bxs-user"></i>

@@ -93,26 +93,32 @@ export default function History() {
 
     const handleChangePage = (pageNumber) => {
         setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
     };
-
     const handlePreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
         }
     };
 
     const handleNextPage = () => {
         if (currentPage < Math.ceil(files.length / filesPerPage)) {
             setCurrentPage(currentPage + 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
         }
     };
 
-    // Get current files
     const indexOfLastFile = currentPage * filesPerPage;
     const indexOfFirstFile = indexOfLastFile - filesPerPage;
     const currentFiles = files.slice(indexOfFirstFile, indexOfLastFile);
 
-    // Page numbers
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(files.length / filesPerPage); i++) {
         pageNumbers.push(i);
@@ -162,8 +168,8 @@ export default function History() {
                                                         setFiles(updatedFiles);
                                                     }}
                                                 />
-                                                <button onClick={() => handleSaveClick(indexOfFirstFile + index)} className="save">Save</button>
-                                                <button onClick={() => handleCancelClick(indexOfFirstFile + index)} className="cancel">Cancel</button>
+                                                <button onClick={() => handleSaveClick(indexOfFirstFile + index)} className="save">保存</button>
+                                                <button onClick={() => handleCancelClick(indexOfFirstFile + index)} className="cancel">取消</button>
                                             </>
                                         ) : (
                                             <>
@@ -171,8 +177,8 @@ export default function History() {
                                                     {file.result}
                                                 </div>
                                                 <div className="history-buttons">
-                                                    <button onClick={() => handleEditClick(indexOfFirstFile + index)} className="edit">Edit</button>
-                                                    <button onClick={() => handleDownloadClick(indexOfFirstFile + index)} className="download">Download</button>
+                                                    <button onClick={() => handleEditClick(indexOfFirstFile + index)} className="edit">修改</button>
+                                                    <button onClick={() => handleDownloadClick(indexOfFirstFile + index)} className="download">下載</button>
                                                 </div>
                                             </>
                                         )}
@@ -184,7 +190,11 @@ export default function History() {
                             <div className="pagination">
                                 <button onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</button>
                                 {pageNumbers.map(number => (
-                                    <button key={number} onClick={() => handleChangePage(number)}>
+                                    <button
+                                        key={number}
+                                        onClick={() => handleChangePage(number)}
+                                        className={currentPage === number ? 'current-page' : ''}
+                                    >
                                         {number}
                                     </button>
                                 ))}

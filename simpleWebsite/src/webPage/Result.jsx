@@ -12,6 +12,8 @@ const Result = () => {
     const [editedResults, setEditedResults] = useState([]);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [successResult, setSuccessResult] = useState(0);
+    const [errorResult, setErrorResult] = useState(0);
 
     useEffect(() => {
         if (results.length === 0) {
@@ -24,9 +26,13 @@ const Result = () => {
                         results.map(async (result) => {
                             if (result.status === 'success') {
                                 const response = await axios.get(`http://localhost:5000/results/${result.filename}`, { withCredentials: true });
+                                setSuccessResult(prevSuccessResult => prevSuccessResult + 1);
                                 return { ...result, data: response.data.data, originalFilename: response.data.originalFilename };
                             }
-                            return result;
+                            else {
+                                setErrorResult(prevErrorResult => prevErrorResult + 1);
+                                return result;
+                            }
                         })
                     );
                     setEditedResults(fetchedResults);
@@ -171,7 +177,9 @@ const Result = () => {
                 <h2 className="result-title">Results</h2>
                 <div className='result-filename'>
                     <strong>檔案名稱:</strong>
-                    <div>{editedResults[currentIndex] && editedResults[currentIndex].originalFilename}</div>
+                    {editedResults[currentIndex] && editedResults[currentIndex].originalFilename ? (
+                        <div>{editedResults[currentIndex] && editedResults[currentIndex].originalFilename}</div>
+                    ) : (<div>{editedResults[currentIndex] && editedResults[currentIndex].filename}</div>)}
                 </div>
                 <div className="result-content">
                     <div className="result-image-container">
@@ -192,7 +200,14 @@ const Result = () => {
                 <div className="result-info">
                     <div>張數：{currentIndex + 1}/{editedResults.length}</div>
                 </div>
-                <button className="save-all" onClick={handleSaveAllClick}>全部保存</button>
+                <div className="success-result">成功：{successResult} 張</div>
+                <div className="error-result">失敗：{errorResult} 張</div>
+                <div className="result-buttons"></div>
+                {successResult > 0 ? (
+                    <button className="save-all" onClick={handleSaveAllClick}>全部保存</button>
+                ) : (
+                    <button className="save-all" onClick={() => navigate('/upload')}>重新上傳</button>
+                )}
             </div>
         </div>
     );

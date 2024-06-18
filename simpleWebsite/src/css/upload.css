@@ -63,7 +63,6 @@
     align-items: center;
 }
 .upload-image-container button{ 
-    position: absolute;
     top: 50%;
     background-color: rgba(255, 255, 255, 0.5);
     border: none;
@@ -77,12 +76,6 @@
     background-color: rgba(255, 255, 255, 0.8);
 }
 
-.upload-image-container button:first-of-type{
-    left: 0;
-    transform: translateY(-50%);
-}
-
-.upload-image-container button:last-of-type{
-    right: 0;
-    transform: translateY(-50%);
+.upload-image-container button:active {
+    background-color: rgba(255, 255, 255, 1);
 }

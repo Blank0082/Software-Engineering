@@ -1,42 +1,42 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import Navbar from "../components/Navbar";
 import '../css/LoginRegister.css';
-import {Link, useNavigate} from "react-router-dom";
-import {AuthContext} from "../components/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../components/AuthContext";
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const {setIsLoggedIn} = useContext(AuthContext);
+    const { setIsLoggedIn } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         axios.post('http://localhost:5000/login', {
-                username,
-                password
-            }, {withCredentials: true}
+            username,
+            password
+        }, { withCredentials: true }
         ).then(response => {
-                //需要創建登入成功畫面
-                setIsLoggedIn(true);
-                navigate('/');
-            }
+            //需要創建登入成功畫面
+            setIsLoggedIn(true);
+            navigate('/');
+        }
         ).catch(error => {
-                if(error.response && error.response.status === 401)
-                    setError('Invalid username or password.');
-                else if (error.response&& error.response.status === 500)
-                    setError('An error occurred during login.');
-                else
-                    setError('Network error. Please try again later.');
-            }
+            if (error.response && error.response.status === 401)
+                setError('Invalid username or password.');
+            else if (error.response && error.response.status === 500)
+                setError('An error occurred during login.');
+            else
+                setError('Network error. Please try again later.');
+        }
         );
     };
 
     return (
         <div className="background_container1">
-            <Navbar/>
+            <Navbar />
             <div className="wrapper list-container">
                 <form onSubmit={handleLogin}>
                     <h1>Welcome</h1>
@@ -44,7 +44,10 @@ function Login() {
                         <input
                             type="text"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(e) => {
+                                setUsername(e.target.value);
+                                setError('');
+                            }}
                             placeholder="Username"
                             required
                         />
@@ -54,7 +57,11 @@ function Login() {
                         <input
                             type="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                setPassword(e.target.value)
+                                setError('');
+                            }
+                            }
                             placeholder="Password"
                             required
                         />

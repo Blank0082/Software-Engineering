@@ -120,10 +120,6 @@ app.post('/upload',authMiddleware, async (req, res) => {
     const files = Array.isArray(req.files.files) ? req.files.files : [req.files.files];
 
 
-    if(files.map(file => file.size).reduce((a, b) => a + b, 0) > 30 * 1024 * 1024) {
-        return res.status(413).json({status: 'error', error: 'Total file size exceeds 30MB.'});
-    }
-
     const uploadDir = './uploads';
     if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir);
@@ -146,8 +142,9 @@ app.post('/upload',authMiddleware, async (req, res) => {
         } else {
             command = `./run.sh ../${uploadPath}`;
         }
-
+        
         const execResult = await new Promise((resolve, reject) => {
+            console.log('啟動腳本，辨識檔案：'+originalFilename);
             exec(command, {timeout: 3600000}, async (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);

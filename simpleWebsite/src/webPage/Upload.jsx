@@ -44,6 +44,7 @@ function Upload() {
     }, [isLoggedIn, authChecked, navigate]);
 
     const onFileChange = event => {
+        setUploadStatus(null);
         const files = Array.from(event.target.files);
         const validFiles = files.filter(file => file.type === "image/png" || file.type === "image/jpeg");
 
@@ -59,6 +60,7 @@ function Upload() {
     };
 
     const onFileUpload = () => {
+        setUploadStatus(null);
         if (selectedFiles.length === 0) {
             setUploadStatus("Please select a file first.");
             return;
@@ -80,9 +82,6 @@ function Upload() {
                 else if (error.response && error.response.status === 401) {
                     //創建未驗證使用者畫面
                     navigate("/");
-                }
-                else if (error.response && error.response.status === 413) {
-                    setUploadStatus("File size exceeds the limit.limit is 30MB.");
                 }
                 else if (error.response && error.response.status === 500) {
                     setUploadStatus("Server error. Please try again later.");
@@ -113,9 +112,9 @@ function Upload() {
                     <>
                         <span>File name:{filesName[currentPreviewIndex]}</span>
                         <div className="upload-image-container">
-                            <button onClick={handlePrevImage} className="first-of-type">&lt;</button>
+                            <button onClick={handlePrevImage}>&lt;</button>
                             <img src={previewUrls[currentPreviewIndex]} alt="Preview" />
-                            <button onClick={handleNextImage} className="last-of-type">&gt;</button>
+                            <button onClick={handleNextImage}>&gt;</button>
                         </div>
                         <span>張數: {currentPreviewIndex + 1}/{selectedFiles.length}</span>
                         <span className="upload-status">{uploadStatus}</span>

@@ -2,12 +2,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 20px;
+}
+html {
+    scroll-behavior: smooth;
 }
 
 .history-container {
     width: 90%;
     max-width: 1000px;
-    background: #fff;
+    background-color: #2a2e2f;
+    color: rgb(196, 184, 167);
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -162,4 +167,41 @@
 
 .history-text-container button.cancel:hover {
     background-color: #da190b;
+}
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    background-color: #007BFF; /* 按鈕背景色 */
+    color: white; /* 按鈕文字顏色 */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pagination button:disabled {
+    background-color: #CCCCCC; /* 禁用按鈕背景色 */
+    cursor: not-allowed;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #0056b3; /* 按鈕懸停背景色 */
+}
+
+.pagination button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* 按鈕聚焦時的陰影效果 */
+}
+
+.pagination .current-page {
+    background-color: #28a745; /* 當前頁面的按鈕背景色 */
 }
